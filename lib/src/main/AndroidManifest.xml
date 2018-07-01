@@ -1,19 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.codepunk.codepunklib_staging">
 
-<<<<<<< HEAD
-    <!--
-=======
->>>>>>> 6577c71642b6352513c2201f5f5b516f2cf64ac2
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"/>
-<<<<<<< HEAD
-    -->
-=======
->>>>>>> 6577c71642b6352513c2201f5f5b516f2cf64ac2
 </manifest>
