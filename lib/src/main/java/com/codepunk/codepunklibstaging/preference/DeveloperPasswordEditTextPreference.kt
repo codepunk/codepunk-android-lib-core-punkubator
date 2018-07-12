@@ -1,4 +1,4 @@
-package com.codepunk.codepunklib_staging.preference
+package com.codepunk.codepunklibstaging.preference
 
 import android.content.Context
 import android.os.Parcel

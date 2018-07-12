@@ -1,4 +1,4 @@
-package com.codepunk.codepunklib_staging
+package com.codepunk.codepunklibstaging
 
 import org.junit.Test
 
