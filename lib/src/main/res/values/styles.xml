@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Preference Styles -->
+
+    <style name="DeveloperModePreference" parent="Preference.DialogPreference.EditTextPreference">
+        <item name="android:dialogLayout">@layout/developer_mode_preference_layout</item>
+        <item name="additionalClicksToUnlock">@integer/additional_clicks_to_unlock</item>
+        <item name="showPasswordDialog">true</item>
+        <item name="messageDigestAlgorithm">SHA_256</item>
+    </style>
+
+</resources>

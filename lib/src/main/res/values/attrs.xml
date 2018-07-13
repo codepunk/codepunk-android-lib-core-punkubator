@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- These are the standard attributes that make up a complete theme. -->
+    <declare-styleable name="Theme">
+
+        <!-- ============== -->
+        <!-- Generic styles -->
+        <!-- ============== -->
+        <eat-comment />
+
+        <!-- =================== -->
+        <!-- Preference styles   -->
+        <!-- =================== -->
+        <eat-comment />
+
+        <!-- Default style for YesNoPreference. -->
+        <attr name="developerModePreferenceStyle" format="reference" />
+
+    </declare-styleable>
+
+    <!-- **************************************************************** -->
+    <!-- Preferences framework. -->
+    <!-- **************************************************************** -->
+    <eat-comment />
+
+    <declare-styleable name="DeveloperModePreference">
+        <!-- The number of additional times the user will have to click the preference
+             before either developer mode is enabled, or a developer password dialog
+             is shown. When this value is set to 0, one of these two events will occur
+             the first time the user clicks the preference. -->
+        <attr name="additionalClicksToUnlock" format="integer" />
+
+        <!-- When this value is set to true, the user will be required to enter a password
+             before developer mode is enabled. -->
+        <attr name="showPasswordDialog" format="boolean" />
+
+        <!-- The hashed password that will be used to verify the user's password attempt. -->
+        <attr name="passwordHash" format="string" />
+
+        <!-- The name of the MessageDigest algorithm that will be used to hash the user's
+             password attempt. -->
+        <attr name="messageDigestAlgorithm" format="enum" >
+            <enum name="MD5" value="0" />
+            <enum name="SHA_1" value="1" />
+            <enum name="SHA_224" value="2" />
+            <enum name="SHA_256" value="3" />
+            <enum name="SHA_384" value="4" />
+            <enum name="SHA_512" value="5" />
+        </attr>
+    </declare-styleable>
+
+</resources>
