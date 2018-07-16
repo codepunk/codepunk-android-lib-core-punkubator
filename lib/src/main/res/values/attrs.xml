@@ -13,8 +13,11 @@
         <!-- =================== -->
         <eat-comment />
 
-        <!-- Default style for YesNoPreference. -->
+        <!-- Default style for DeveloperModePreference. -->
         <attr name="developerModePreferenceStyle" format="reference" />
+
+        <!-- Default style for YesNoPreference. -->
+        <attr name="yesNoPreferenceStyle" format="reference" />
 
     </declare-styleable>
 
@@ -30,12 +33,21 @@
              the first time the user clicks the preference. -->
         <attr name="additionalClicksToUnlock" format="integer" />
 
-        <!-- When this value is set to true, the user will be required to enter a password
-             before developer mode is enabled. -->
-        <attr name="showPasswordDialog" format="boolean" />
+        <!-- The title to display in the confirmation dialog when the user tries to cancel out
+             of re-entering a stale developer password. -->
+        <attr name="cancelStaleDialogTitle" format="string" />
 
-        <!-- The hashed password that will be used to verify the user's password attempt. -->
-        <attr name="passwordHash" format="string" />
+        <!-- The message to display in the confirmation dialog when the user tries to cancel out
+             of re-entering a stale developer password. -->
+        <attr name="cancelStaleDialogMessage" format="string" />
+
+        <!-- The text of the positive button to display in the confirmation dialog when the user
+             tries to cancel out of re-entering a stale developer password. -->
+        <attr name="cancelStaleDialogPositiveButtonText" format="string" />
+
+        <!-- The text of the negative button to display in the confirmation dialog when the user
+             tries to cancel out of re-entering a stale developer password. -->
+        <attr name="cancelStaleDialogNegativeButtonText" format="string" />
 
         <!-- The name of the MessageDigest algorithm that will be used to hash the user's
              password attempt. -->
@@ -47,6 +59,19 @@
             <enum name="SHA_384" value="4" />
             <enum name="SHA_512" value="5" />
         </attr>
+
+        <!-- The hashed password that will be used to verify the user's password attempt. -->
+        <attr name="passwordHash" format="string" />
+
+        <!-- When this value is set to true, the user will be required to enter a password
+             before developer mode is enabled. -->
+        <attr name="showPasswordDialog" format="boolean" />
+
+        <!-- The message to display in the dialog when there is a previously-persisted
+             password hash that no longer matches the supplied passwordHash. -->
+        <attr name="staleDialogMessage" format="string" />
     </declare-styleable>
+
+    <declare-styleable name="YesNoPreference" />
 
 </resources>

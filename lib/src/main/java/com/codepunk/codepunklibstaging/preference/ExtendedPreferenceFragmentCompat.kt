@@ -10,13 +10,8 @@ abstract class ExtendedPreferenceFragmentCompat: PreferenceFragmentCompat() {
     }
 
     override fun onDisplayPreferenceDialog(preference: Preference?) {
-        var handled = false
-
-        if (preference is OnPreferenceDisplayDialogCallback) {
-            handled = preference.onPreferenceDisplayDialog(this, preference)
-        }
-
-        if (handled) {
+        if (preference is OnPreferenceDisplayDialogCallback &&
+                preference.onPreferenceDisplayDialog(this, preference)) {
             return
         }
 

@@ -5,9 +5,21 @@
 
     <style name="DeveloperModePreference" parent="Preference.DialogPreference.EditTextPreference">
         <item name="android:dialogLayout">@layout/developer_mode_preference_layout</item>
-        <item name="additionalClicksToUnlock">@integer/additional_clicks_to_unlock</item>
-        <item name="showPasswordDialog">true</item>
+        <item name="android:dialogMessage">@string/developer_mode_enter_password</item>
+        <item name="android:dialogTitle">@string/developer_options</item>
+        <item name="additionalClicksToUnlock">@integer/developer_mode_additional_clicks_to_unlock</item>
         <item name="messageDigestAlgorithm">SHA_256</item>
+        <item name="showPasswordDialog">true</item>
+        <item name="staleDialogMessage">@string/developer_mode_stale_password</item>
+        <item name="cancelStaleDialogTitle">@string/are_you_sure</item>
+        <item name="cancelStaleDialogMessage">@string/developer_mode_cancel_stale_dialog_message</item>
+        <item name="cancelStaleDialogPositiveButtonText">@android:string/ok</item>
+        <item name="cancelStaleDialogNegativeButtonText">@android:string/cancel</item>
+    </style>
+
+    <style name="YesNoPreference" parent="Preference.DialogPreference">
+        <item name="android:positiveButtonText">@android:string/yes</item>
+        <item name="android:negativeButtonText">@android:string/no</item>
     </style>
 
 </resources>

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="additional_clicks_to_unlock">6</integer>
+    <integer name="developer_mode_additional_clicks_to_unlock">6</integer>
 </resources>

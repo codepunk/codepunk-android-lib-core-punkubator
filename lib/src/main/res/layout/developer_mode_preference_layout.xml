@@ -10,6 +10,7 @@
     android:paddingStart="?dialogPreferredPadding"
     android:paddingEnd="?dialogPreferredPadding">
 
+    <!--
     <android.support.v7.widget.AppCompatTextView
         android:id="@android:id/message"
         android:layout_width="match_parent"
@@ -18,13 +19,14 @@
         android:padding="@dimen/space_typography"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Message" />
+    -->
 
     <android.support.design.widget.TextInputLayout
         android:id="@id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_baseline"
-        app:layout_constraintTop_toBottomOf="@android:id/message"
+        app:layout_constraintTop_toTopOf="parent"
         app:passwordToggleEnabled="true"
         app:errorEnabled="true">
 
@@ -32,7 +34,7 @@
             android:id="@android:id/edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/pref_developer_mode_password_hint"
+            android:hint="@string/password"
             android:inputType="textPassword"/>
 
     </android.support.design.widget.TextInputLayout>
