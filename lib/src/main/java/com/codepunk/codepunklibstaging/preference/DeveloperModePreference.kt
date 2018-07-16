@@ -209,11 +209,6 @@ open class DeveloperModePreference @JvmOverloads constructor(
 
     //region Inherited methods
 
-    override fun callChangeListener(newValue: Any?): Boolean {
-
-        return super.callChangeListener(newValue)
-    }
-
     override fun onClick() {
         when {
             isDeveloper -> {
@@ -250,7 +245,7 @@ open class DeveloperModePreference @JvmOverloads constructor(
         /*
         if (isPersistent) {
             // No need to save instance state since it's persistent
-            return superState;
+            return superState
         }
         */
 

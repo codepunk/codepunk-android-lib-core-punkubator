@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- The name of the MessageDigest algorithm that will be used to hash the user's
+         password attempt. -->
+    <attr name="messageDigestAlgorithm" format="enum" >
+        <enum name="none" value="-1" />
+        <enum name="md5" value="1" />
+        <enum name="sha_1" value="2" />
+        <enum name="sha_224" value="3" />
+        <enum name="sha_256" value="4" />
+        <enum name="sha_384" value="5" />
+        <enum name="sha_512" value="6" />
+    </attr>
+
+    <!-- The hashed password that will be used to verify the user's password attempt. -->
+    <attr name="passwordHash" format="string" />
+
     <!-- These are the standard attributes that make up a complete theme. -->
     <declare-styleable name="Theme">
 
@@ -15,6 +30,9 @@
 
         <!-- Default style for DeveloperModePreference. -->
         <attr name="developerModePreferenceStyle" format="reference" />
+
+        <!-- Default style for DeveloperModePreference. -->
+        <attr name="passwordPreferenceStyle" format="reference" />
 
         <!-- Default style for YesNoPreference. -->
         <attr name="yesNoPreferenceStyle" format="reference" />
@@ -51,17 +69,10 @@
 
         <!-- The name of the MessageDigest algorithm that will be used to hash the user's
              password attempt. -->
-        <attr name="messageDigestAlgorithm" format="enum" >
-            <enum name="MD5" value="0" />
-            <enum name="SHA_1" value="1" />
-            <enum name="SHA_224" value="2" />
-            <enum name="SHA_256" value="3" />
-            <enum name="SHA_384" value="4" />
-            <enum name="SHA_512" value="5" />
-        </attr>
+        <attr name="messageDigestAlgorithm" />
 
         <!-- The hashed password that will be used to verify the user's password attempt. -->
-        <attr name="passwordHash" format="string" />
+        <attr name="passwordHash" />
 
         <!-- When this value is set to true, the user will be required to enter a password
              before developer mode is enabled. -->
@@ -72,6 +83,18 @@
         <attr name="staleDialogMessage" format="string" />
     </declare-styleable>
 
-    <declare-styleable name="YesNoPreference" />
+    <declare-styleable name="PasswordPreference">
+
+        <!-- The name of the MessageDigest algorithm that will be used to hash the user's
+             password attempt. -->
+        <attr name="messageDigestAlgorithm" />
+
+        <!-- The hashed password that will be used to verify the user's password attempt. -->
+        <attr name="passwordHash" />
+
+        <!-- The value that should be saved upon a successful password attempt. -->
+        <attr name="authToken" format="string" />
+
+    </declare-styleable>
 
 </resources>

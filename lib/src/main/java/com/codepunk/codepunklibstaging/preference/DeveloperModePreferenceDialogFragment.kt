@@ -58,7 +58,7 @@ class DeveloperModePreferenceDialogFragment: EditTextPreferenceDialogFragmentCom
     private val digestUtils: DigestUtils by lazy {
         DigestUtils(
                 arguments?.getString(ARG_MESSAGE_DIGEST_ALGORITHM)
-                        ?: MessageDigestAlgorithms.SHA3_256)
+                        ?: MessageDigestAlgorithms.SHA_256)
     }
 
     private val textInputLayout: TextInputLayout? by lazy {
