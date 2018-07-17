@@ -11,6 +11,8 @@ import android.widget.EditText
 import com.codepunk.codepunklibstaging.R
 import com.codepunk.codepunklibstaging.util.shake
 
+// TODO NEXT How to validate authToken in future visits? I think this will be a function of the client and NOT this generic class
+
 class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat(),
         DialogInterface.OnShowListener,
         View.OnClickListener {
@@ -51,7 +53,7 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
         (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
     }
 
-    private var authToken: String? = INVALID
+    private var positiveValue: String? = null
 
     //endregion Fields
 
@@ -65,9 +67,9 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
 
     override fun onDialogClosed(positiveResult: Boolean) {
         if (positiveResult) {
-            if (passwordPreference.callChangeListener(authToken)) {
-                passwordPreference.text = authToken
-            }
+            passwordPreference.onPositiveResult(positiveValue)
+        } else {
+            passwordPreference.onNegativeResult()
         }
     }
 
@@ -85,25 +87,28 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
         when (view) {
             okBtn -> {
                 val password = edit.text.toString()
-                authToken = when {
-                    passwordPreference.validationListener != null ->
-                            passwordPreference.validationListener!!.onValidatePassword(password)
-                    passwordPreference.passwordHash == null -> INVALID
-                    else -> {
-                        val other = passwordPreference.digestUtils?.digestAsHex(password) ?: password
-                        if (passwordPreference.passwordHash.equals(other, true))
-                            passwordPreference.authToken ?: other
-                        else INVALID
-                    }
-                }
-                when (authToken) {
-                    INVALID -> {
-                        layout?.error = resources.getString(R.string.incorrect_password)
-                        dialog.window.decorView.shake()
-                    }
-                    else -> {
-                        onClick(dialog, DialogInterface.BUTTON_POSITIVE)
-                        dismiss()
+                passwordPreference.apply {
+                    when {
+                        onValidatePasswordPreferenceListener != null ->
+                            onValidatePasswordPreferenceListener!!
+                                    .onValidatePreferencePassword(this, password)
+                        passwordHash != null -> {
+                            val success = when (digestUtils) {
+                                null -> passwordHash.equals(password, false)
+                                else -> passwordHash.equals(
+                                        digestUtils!!.digestAsHex(password), true)
+                            }
+                            if (success) {
+                                this@PasswordPreferenceDialogFragment
+                                        .onPasswordSuccess(passwordHash!!)
+                            } else {
+                                this@PasswordPreferenceDialogFragment.onPasswordFailure()
+                            }
+                        }
+                        else -> throw IllegalStateException(
+                                this::class.java.simpleName + " requires either " +
+                                        "onValidatePasswordPreferenceListener or " +
+                                        "passwordHash to be non-null.")
                     }
                 }
             }
@@ -111,4 +116,24 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
     }
 
     //endregion Implemented methods
+
+    //region Methods
+
+    fun onPasswordSuccess(positiveValue: String?) {
+        this.positiveValue = positiveValue
+        onClick(dialog, DialogInterface.BUTTON_POSITIVE)
+        dismiss()
+    }
+
+    fun onPasswordFailure(
+            errorMessage: String? = getString(R.string.incorrect_password),
+            shake: Boolean = true) {
+        positiveValue = null
+        errorMessage?.run { layout?.error = this }
+        if (shake) {
+            dialog.window.decorView.shake()
+        }
+    }
+
+    //endregion Methods
 }

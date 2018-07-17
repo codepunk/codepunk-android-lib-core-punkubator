@@ -92,9 +92,6 @@
         <!-- The hashed password that will be used to verify the user's password attempt. -->
         <attr name="passwordHash" />
 
-        <!-- The value that should be saved upon a successful password attempt. -->
-        <attr name="authToken" format="string" />
-
     </declare-styleable>
 
 </resources>
