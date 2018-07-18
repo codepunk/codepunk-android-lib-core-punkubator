@@ -1,4 +1,4 @@
-package com.codepunk.codepunklibstaging.preference
+package com.codepunk.codepunklibstaging.preference.old
 
 import android.content.Context
 import android.os.Parcel
@@ -9,7 +9,7 @@ import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.util.AttributeSet
 import com.codepunk.codepunklibstaging.R
-import com.codepunk.codepunklibstaging.preference.ExtendedPreferenceFragmentCompat.Companion.DIALOG_FRAGMENT_TAG
+import com.codepunk.codepunklibstaging.preference.old.ExtendedPreferenceFragmentCompat.Companion.DIALOG_FRAGMENT_TAG
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.codec.digest.MessageDigestAlgorithms
 

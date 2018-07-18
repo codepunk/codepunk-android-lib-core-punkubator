@@ -1,4 +1,4 @@
-package com.codepunk.codepunklibstaging.preference
+package com.codepunk.codepunklibstaging.preference.old
 
 import android.content.Context
 import android.os.Parcel
@@ -9,7 +9,7 @@ import android.support.v7.preference.PreferenceFragmentCompat
 import android.text.TextUtils
 import android.util.AttributeSet
 import com.codepunk.codepunklibstaging.R
-import com.codepunk.codepunklibstaging.preference.ExtendedPreferenceFragmentCompat.Companion.DIALOG_FRAGMENT_TAG
+import com.codepunk.codepunklibstaging.preference.old.ExtendedPreferenceFragmentCompat.Companion.DIALOG_FRAGMENT_TAG
 import org.apache.commons.codec.digest.MessageDigestAlgorithms
 
 // TODO NEXT:
@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms
 // [ ] Handle disabling developer options with an "Are you sure" dialog (See saved screenshot on Desktop)
 // [ ] Re-examine this "removeText/removeString" logic below. Don't like it.
 // [ ] Respond to "showPasswordDialog" attribute
-// [ ] Get rid of "DeveloperState" enum?
+// [X] Get rid of "DeveloperState" enum?
 // [X] Get rid of Classes I no longer need in app
 
 open class DeveloperModePreference @JvmOverloads constructor(
@@ -34,13 +34,6 @@ open class DeveloperModePreference @JvmOverloads constructor(
         PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback {
 
     //region Nested classes
-
-    enum class DeveloperState {
-        NOT_DEVELOPER,
-        //        AWAITING_PASSWORD,
-        STALE_PASSWORD,
-        DEVELOPER
-    }
 
     interface OnRemainingClicksChangeListener {
         fun onRemainingClicksChanged(preference: DeveloperModePreference, remainingClicksToUnlock: Int)
@@ -298,8 +291,7 @@ open class DeveloperModePreference @JvmOverloads constructor(
         }
 
         pref?.apply {
-            val fragment = DeveloperModePreferenceDialogFragment
-                    .newInstance(key, passwordHash)
+            val fragment = DeveloperModePreferenceDialogFragment.newInstance(key, passwordHash)
             fragment.setTargetFragment(caller, 0)
             fragment.show(fragmentManager, DIALOG_FRAGMENT_TAG)
             return true

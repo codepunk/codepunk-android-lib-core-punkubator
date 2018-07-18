@@ -1,4 +1,4 @@
-package com.codepunk.codepunklibstaging.preference
+package com.codepunk.codepunklibstaging.preference.old
 
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat

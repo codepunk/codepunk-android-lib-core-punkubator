@@ -1,4 +1,4 @@
-package com.codepunk.codepunklibstaging.preference
+package com.codepunk.codepunklibstaging.preference.old
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -102,7 +102,8 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
                                 this@PasswordPreferenceDialogFragment
                                         .onPasswordSuccess(passwordHash!!)
                             } else {
-                                this@PasswordPreferenceDialogFragment.onPasswordFailure()
+                                this@PasswordPreferenceDialogFragment
+                                        .onPasswordFailure()
                             }
                         }
                         else -> throw IllegalStateException(
