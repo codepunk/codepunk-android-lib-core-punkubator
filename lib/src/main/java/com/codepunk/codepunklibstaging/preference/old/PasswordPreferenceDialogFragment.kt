@@ -22,8 +22,7 @@ class PasswordPreferenceDialogFragment: EditTextPreferenceDialogFragmentCompat()
     companion object {
         private val TAG = PasswordPreferenceDialogFragment::class.java.simpleName
 
-        fun newInstance(key: String):
-                PasswordPreferenceDialogFragment {
+        fun newInstance(key: String): PasswordPreferenceDialogFragment {
             return PasswordPreferenceDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_KEY, key)
