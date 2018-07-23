@@ -27,4 +27,12 @@
         <item name="android:negativeButtonText">@android:string/no</item>
     </style>
 
+    <style name="SwitchTwoTargetPreference" parent="Preference.SwitchPreferenceCompat">
+        <item name="android:widgetLayout">@layout/android_preference_widget_master_switch</item>
+    </style>
+
+    <style name="SwitchTwoTargetPreference.Material" parent="Preference.SwitchPreferenceCompat.Material">
+        <item name="android:widgetLayout">@layout/android_preference_widget_master_switch</item>
+    </style>
+
 </resources>

@@ -16,7 +16,7 @@ class PasswordPreference @JvmOverloads constructor(
         defStyleAttr: Int = R.attr.passwordPreferenceStyle,
         defStyleRes: Int = R.style.PasswordPreference) :
         EditTextPreference(context, attrs, defStyleAttr, defStyleRes),
-        PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback{
+        PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback {
 
     // region Lifecycle methods
 
