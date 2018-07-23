@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The name of the MessageDigest algorithm that will be used to hash the user's
-         password attempt. -->
-    <attr name="messageDigestAlgorithm" format="enum" >
-        <enum name="none" value="-1" />
-        <enum name="md5" value="1" />
-        <enum name="sha_1" value="2" />
-        <enum name="sha_224" value="3" />
-        <enum name="sha_256" value="4" />
-        <enum name="sha_384" value="5" />
-        <enum name="sha_512" value="6" />
-    </attr>
-
-    <!-- The hashed password that will be used to verify the user's password attempt. -->
-    <attr name="passwordHash" format="string" />
 
     <!-- These are the standard attributes that make up a complete theme. -->
     <declare-styleable name="Theme">
@@ -28,100 +14,9 @@
         <!-- =================== -->
         <eat-comment />
 
-        <!-- Default style for DeveloperModePreference. -->
-        <attr name="developerModePreferenceStyle" format="reference" />
-
-        <!-- Default style for DeveloperModePreference. -->
-        <attr name="passwordPreferenceStyle" format="reference" />
-
         <!-- Default style for YesNoPreference. -->
         <attr name="yesNoPreferenceStyle" format="reference" />
 
-        <!-- Default style for switch compat preferences. -->
-        <attr name="switchTwoTargetPreferenceStyle" format="reference" />
-
-    </declare-styleable>
-
-    <!-- **************************************************************** -->
-    <!-- Preferences framework. -->
-    <!-- **************************************************************** -->
-    <eat-comment />
-
-    <declare-styleable name="DeveloperModePreference">
-        <!-- The number of additional times the user will have to click the preference
-             before either developer mode is enabled, or a developer password dialog
-             is shown. When this value is set to 0, one of these two events will occur
-             the first time the user clicks the preference. -->
-        <attr name="additionalClicksToUnlock" format="integer" />
-
-        <!-- The title to display in the confirmation dialog when the user tries to cancel out
-             of re-entering a stale developer password. -->
-        <attr name="cancelStaleDialogTitle" format="string" />
-
-        <!-- The message to display in the confirmation dialog when the user tries to cancel out
-             of re-entering a stale developer password. -->
-        <attr name="cancelStaleDialogMessage" format="string" />
-
-        <!-- The text of the positive button to display in the confirmation dialog when the user
-             tries to cancel out of re-entering a stale developer password. -->
-        <attr name="cancelStaleDialogPositiveButtonText" format="string" />
-
-        <!-- The text of the negative button to display in the confirmation dialog when the user
-             tries to cancel out of re-entering a stale developer password. -->
-        <attr name="cancelStaleDialogNegativeButtonText" format="string" />
-
-        <!-- The name of the MessageDigest algorithm that will be used to hash the user's
-             password attempt. -->
-        <attr name="messageDigestAlgorithm" />
-
-        <!-- The hashed password that will be used to verify the user's password attempt. -->
-        <attr name="passwordHash" />
-
-        <!-- When this value is set to true, the user will be required to enter a password
-             before developer mode is enabled. -->
-        <attr name="showPasswordDialog" format="boolean" />
-
-        <!-- The message to display in the dialog when there is a previously-persisted
-             password hash that no longer matches the supplied passwordHash. -->
-        <attr name="staleDialogMessage" format="string" />
-    </declare-styleable>
-
-    <declare-styleable name="PasswordPreference">
-        <!-- The name of the MessageDigest algorithm that will be used to hash the user's
-             password attempt. -->
-        <attr name="messageDigestAlgorithm" />
-
-        <!-- The hashed password that will be used to verify the user's password attempt. -->
-        <attr name="passwordHash" />
-    </declare-styleable>
-
-    <declare-styleable name="SwitchTwoTargetPreference">
-        <!-- The summary for the Preference in a PreferenceActivity screen when the
-             SwitchTwoTargetPreference is checked. If separate on/off summaries are not
-             needed, the summary attribute can be used instead. -->
-        <attr name="summaryOn" />
-        <attr name="android:summaryOn" />
-
-        <!-- The summary for the Preference in a PreferenceActivity screen when the
-             SwitchTwoTargetPreference is unchecked. If separate on/off summaries are not
-             needed, the summary attribute can be used instead. -->
-        <attr name="summaryOff" />
-        <attr name="android:summaryOff" />
-
-        <!-- The text used on the switch itself when in the "on" state.
-             This should be a very SHORT string, as it appears in a small space. -->
-        <attr name="switchTextOn" format="string" />
-        <attr name="android:switchTextOn" />
-
-        <!-- The text used on the switch itself when in the "off" state.
-             This should be a very SHORT string, as it appears in a small space. -->
-        <attr name="switchTextOff" format="string" />
-        <attr name="android:switchTextOff" />
-
-        <!-- The state (true for on, or false for off) that causes dependents to be disabled. By default,
-             dependents will be disabled when this is unchecked, so the value of this preference is false. -->
-        <attr name="disableDependentsState" />
-        <attr name="android:disableDependentsState" />
     </declare-styleable>
 
 </resources>

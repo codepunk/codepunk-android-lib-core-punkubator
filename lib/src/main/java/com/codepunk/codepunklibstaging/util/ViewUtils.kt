@@ -4,7 +4,7 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.view.View
 import com.codepunk.codepunklibstaging.R
-import com.codepunk.codepunklibstaging.animation.ShakeInterpolator
+import com.codepunk.codepunklib.view.animation.ShakeInterpolator
 
 private var shakeAnimator: Animator? = null
 
