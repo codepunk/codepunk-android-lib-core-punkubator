@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 buildscript {
-    ext.android_support_version = '28.0.0-alpha3'
+    ext.android_support_version = '28.0.0-beta01'
     ext.kotlin_version = '1.2.51'
 }
 
@@ -33,7 +33,7 @@ dependencies {
     implementation "com.android.support:design:$android_support_version"
     implementation "com.android.support:preference-v7:$android_support_version"
     implementation 'commons-codec:commons-codec:1.11'
-    implementation project(':codepunklib')
+    implementation project(':doofenschmirtz')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

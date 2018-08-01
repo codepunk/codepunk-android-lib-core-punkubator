@@ -1,4 +1,4 @@
-package com.codepunk.codepunklibstaging
+package com.codepunk.punkubator
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
