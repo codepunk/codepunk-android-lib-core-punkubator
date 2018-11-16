@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2018 Codepunk, LLC
- * Author(s): Scott Slater
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +14,33 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util
+package com.codepunk.punkubator.util.take1
 
 import com.google.android.material.textfield.TextInputLayout
-import com.codepunk.punkubator.util.Validatinator.ValidatinatorListener
+import com.codepunk.punkubator.util.take1.Validatinator.ValidatinatorListener
 
 class TextInputLayoutValidatinator(
     private val layout: TextInputLayout,
     wrapped: Validatinator<CharSequence?>
-) : ValidatinatorWrapper<Void?, CharSequence?>(wrapped) {
+) : ValidatinatorWrapper<TextInputLayout, CharSequence?>(wrapped) {
 
-    override fun getWrappedInput(input: Void?): CharSequence? = layout.editText?.text
+    override fun getWrappedInput(input: TextInputLayout): CharSequence? = layout.editText?.text
 
-    override fun onValid(validatinator: Validatinator<Void?>, input: Void?) {
-        layout.error = null
+    override fun onValid(validatinator: Validatinator<TextInputLayout>, input: TextInputLayout) {
+        input.error = null
     }
 
     override fun onInvalid(
-        validatinator: Validatinator<Void?>,
-        input: Void?,
+        validatinator: Validatinator<TextInputLayout>,
+        input: TextInputLayout,
         message: CharSequence?
     ) {
-        layout.error = message
-        layout.requestFocus()
+        input.error = message
+        input.requestFocus()
     }
 
-    fun validate(listener: ValidatinatorListener<Void?>? = null): Boolean {
-        return super.validate(null, listener)
+    fun validate(listener: ValidatinatorListener<TextInputLayout>? = null): Boolean {
+        return super.validate(layout, listener)
     }
 
 }

@@ -15,25 +15,29 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util
+package com.codepunk.punkubator.util.take2
 
 import android.content.Context
 import com.codepunk.punkubator.R
 
-class RequiredValidatinator : AbsValidatinator<CharSequence?> {
+class RequiredRule : AbsRule<CharSequence?> {
 
-    constructor(getMessage: (input: CharSequence?) -> CharSequence?) : super(getMessage)
+    constructor(message: (input: CharSequence?) -> CharSequence) : super(message)
 
-    constructor(message: CharSequence?) : super(message)
+    constructor(message: CharSequence) : super(message)
 
-    constructor(
-        context: Context,
-        valueName: CharSequence = context.getString(R.string.validatinator_value_name),
-        getMessage: (input: CharSequence?) -> CharSequence? = {
-            context.getString(R.string.validatinator_invalid_required, valueName)
-        }
-    ) : super(context, valueName, getMessage)
+    constructor(context: Context, inputName: CharSequence? = null) : this(
+        context,
+        inputName,
+        R.string.validatinator_invalid_required
+    )
 
-    override fun isValid(input: CharSequence?): Boolean = !input.isNullOrBlank()
+    constructor(context: Context, inputName: CharSequence?, resId: Int) : super(
+        context,
+        inputName,
+        resId
+    )
+
+    override fun isValid(input: CharSequence?): Boolean = !input.isNullOrEmpty()
 
 }

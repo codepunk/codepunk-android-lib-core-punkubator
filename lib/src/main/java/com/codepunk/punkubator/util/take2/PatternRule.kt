@@ -15,38 +15,43 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util
+package com.codepunk.punkubator.util.take2
 
 import android.content.Context
+import androidx.annotation.StringRes
 import com.codepunk.punkubator.R
 import java.util.regex.Pattern
 
-class PatternValidatinator : AbsValidatinator<CharSequence?> {
+open class PatternRule : AbsRule<CharSequence?> {
 
-    val pattern: Pattern
+    private val pattern: Pattern
 
     constructor(
         pattern: Pattern,
-        getMessage: (input: CharSequence?) -> CharSequence?
-    ) : super(getMessage) {
+        message: (input: CharSequence?) -> CharSequence
+    ) : super(message) {
         this.pattern = pattern
     }
 
-    constructor(pattern: Pattern, message: CharSequence?) : super(message) {
+    constructor(pattern: Pattern, message: CharSequence) : super(message) {
         this.pattern = pattern
     }
+
+    constructor(pattern: Pattern, context: Context, inputName: CharSequence? = null) : this(
+        pattern,
+        context,
+        inputName,
+        R.string.validatinator_invalid_pattern
+    )
 
     constructor(
         pattern: Pattern,
         context: Context,
-        valueName: CharSequence = context.getString(R.string.validatinator_value_name),
-        getMessage: (input: CharSequence?) -> CharSequence? = {
-            context.getString(R.string.validatinator_invalid_pattern, valueName)
-        }
-    ) : super(context, valueName, getMessage) {
+        inputName: CharSequence?, @StringRes resId: Int
+    ) : super(context, inputName, resId) {
         this.pattern = pattern
     }
 
-    override fun isValid(input: CharSequence?): Boolean =
-        pattern.matcher(input).matches()
+    override fun isValid(input: CharSequence?): Boolean = pattern.matcher(input).matches()
+
 }

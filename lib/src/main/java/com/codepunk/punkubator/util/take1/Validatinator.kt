@@ -1,6 +1,5 @@
 /*
  * Copyright (C) 2018 Codepunk, LLC
- * Author(s): Scott Slater
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util
+package com.codepunk.punkubator.util.take1
 
 interface Validatinator<T> {
 
