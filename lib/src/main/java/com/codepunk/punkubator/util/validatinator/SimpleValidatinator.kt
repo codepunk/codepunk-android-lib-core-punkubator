@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018 Codepunk, LLC
+ * Author(s): Scott Slater
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +15,18 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util.take1
+package com.codepunk.punkubator.util.validatinator
 
-import com.codepunk.punkubator.util.take1.Validatinator.ValidatinatorListener
+abstract class SimpleValidatinator<T> protected constructor(
+    validMessage: (input: T) -> CharSequence?,
+    invalidMessage: (input: T) -> CharSequence?
+) : Validatinator<T>(validMessage, invalidMessage) {
 
-class ValidatinatorSet<T> :
-    LinkedHashSet<Validatinator<T>>(),
-    Validatinator<T> {
-
-    override fun validate(input: T, listener: ValidatinatorListener<T>?): Boolean {
-        for (validatinator in this) {
-            if (!validatinator.validate(input, listener)) {
-                return false
-            }
-        }
-        listener?.onValid(this, input)
-        return true
+    override fun validate(input: T): Result<T> = when (isValid(input)) {
+        true -> Result(true, input, validMessage(input))
+        false -> Result(false, input, invalidMessage(input))
     }
+
+    abstract fun isValid(input: T): Boolean
 
 }

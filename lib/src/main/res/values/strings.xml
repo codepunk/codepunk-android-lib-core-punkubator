@@ -19,17 +19,23 @@
 
     <string name="validatinator_value_name">The value</string>
 
+    <string name="validatinator_this_value">This value</string>
+
+    <string name="validatinator_name">The input</string>
+
+    <string name="validatinator_valid">%1$s is valid.</string>
+
     <string name="validatinator_invalid">%1$s is not valid.</string>
 
     <string name="validatinator_invalid_min">%1$s must be at least %2$d characters.</string>
 
     <string name="validatinator_invalid_max">%1$s may not be greater than %2$d characters.</string>
 
-    <string name="validatinator_invalid_min_max">%1$s must be between %2$d and %3$d characters.</string>
+    <string name="validatinator_invalid_range">%1$s must be between %2$d and %3$d characters.</string>
 
-    <plurals name="validatinator_invalid_min_max">
-        <item quantity="one">%1$s must be %2$d character in length.</item>
-        <item quantity="other">%1$s must be %2$d characters in length.</item>
+    <plurals name="validatinator_invalid_range">
+        <item quantity="one">%1$s must be exactly %2$d character in length.</item>
+        <item quantity="other">%1$s must be exactly %2$d characters in length.</item>
     </plurals>
 
     <string name="validatinator_invalid_pattern">%1$s format is invalid.</string>
