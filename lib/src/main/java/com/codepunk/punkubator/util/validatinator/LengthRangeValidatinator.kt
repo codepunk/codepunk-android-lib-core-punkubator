@@ -20,64 +20,59 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-class LengthRangeValidatinator protected constructor(
-    validMessage: (input: CharSequence?) -> CharSequence?,
-    invalidMessage: (input: CharSequence?) -> CharSequence?,
-    protected val minLength: Int = 0,
-    protected val maxLength: Int = Integer.MAX_VALUE
-) : SimpleValidatinator<CharSequence?>(validMessage, invalidMessage) {
+open class LengthRangeValidatinator protected constructor(
+    context: Context?,
+    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    protected val minLength: Int,
+    protected val maxLength: Int
+) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun isValid(input: CharSequence?): Boolean =
+    override fun isValid(input: CharSequence?, options: Options): Boolean =
         input != null && input.length in minLength..maxLength
 
-    class Builder(
-
-        _minLength: Int = 0,
-        _maxLength: Int = Integer.MAX_VALUE
-
+    open class Builder(
+        minLength: Int = 0,
+        maxLength: Int = Int.MAX_VALUE
     ) : AbsBuilder<CharSequence?, LengthRangeValidatinator, Builder>() {
 
-        val minLength: Int
-        val maxLength: Int
+        protected val minLength = Math.min(Math.max(minLength, 0), Math.max(maxLength, 0))
 
-        override val thisBuilder: Builder = this
+        protected val maxLength = Math.max(Math.max(minLength, 0), Math.max(maxLength, 0))
 
-        init {
-            val adjustedMin = Math.max(_minLength, 0)
-            val adjustedMax = Math.max(_maxLength, 0)
-            minLength = Math.min(adjustedMin, adjustedMax)
-            maxLength = Math.max(adjustedMin, adjustedMax)
-        }
+        override val thisBuilder: Builder by lazy { this }
 
-        override fun getInvalidMessage(
+        override var getInvalidMessage: (
             context: Context?,
-            inputName: CharSequence?,
-            input: CharSequence?
-        ): CharSequence? = context?.run {
-            when (minLength) {
-                maxLength -> resources.getQuantityString(
-                    R.plurals.validatinator_invalid_range,
-                    minLength,
-                    inputName ?: "\"$input\"",
-                    minLength
-                )
-                else -> getString(
-                    R.string.validatinator_invalid_range,
-                    inputName,
-                    minLength,
-                    maxLength
-                )
-            }
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.run {
+                when (minLength) {
+                    maxLength -> resources.getQuantityString(
+                        R.plurals.validatinator_invalid_range,
+                        minLength,
+                        inputName,
+                        minLength
+                    )
+                    else -> getString(
+                        R.string.validatinator_invalid_range,
+                        inputName,
+                        minLength,
+                        maxLength
+                    )
+                }
+            } ?: throw missingContextException("getInvalidMessage")
         }
 
         override fun build(): LengthRangeValidatinator =
             LengthRangeValidatinator(
-                validMessage,
-                invalidMessage,
+                context,
+                getInputName,
+                getInvalidMessage,
+                getValidMessage,
                 minLength,
                 maxLength
             )
-
     }
-
 }

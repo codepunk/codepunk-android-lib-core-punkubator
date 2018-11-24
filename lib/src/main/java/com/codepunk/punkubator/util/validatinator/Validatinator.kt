@@ -19,90 +19,191 @@ package com.codepunk.punkubator.util.validatinator
 
 import android.content.Context
 import com.codepunk.punkubator.R
+import java.lang.Exception
+import java.lang.IllegalStateException
 
 abstract class Validatinator<T> protected constructor(
 
-    protected val validMessage: (input: T) -> CharSequence?,
+    protected val context: Context?,
 
-    protected val invalidMessage: (input: T) -> CharSequence?
+    protected val getInputName: (context: Context?, input: T) -> CharSequence?,
+
+    protected val getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+
+    protected val getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?
 
 ) {
 
-    abstract fun validate(input: T): Result<T>
+    // region Inherited methods
 
-    class Result<T>(
-        val valid: Boolean,
-        val input: T,
-        val message: CharSequence? = null,
-        val cause: Result<T>? = null,
-        val trace: Iterable<Result<T>>? = null
-    )
+    override fun toString(): String {
+        return javaClass.simpleName + '@' + Integer.toHexString(hashCode())
+    }
+
+    // endregion Inherited methods
+
+    // region Methods
+
+    open fun validate(input: T, options: Options = Options()): Boolean {
+        val valid = isValid(input, options)
+        val message = generateMessage(input, valid, options)
+        if (options.requestMessage && options.outMessage == null) {
+            options.outMessage = message
+        }
+        if (options.requestTrace) {
+            options.ensureTrace().add(ValidatinatorTraceElement(this, valid, message))
+        }
+        return valid
+    }
+
+    protected fun generateMessage(input: T, valid: Boolean, options: Options): CharSequence? =
+        when {
+            options.requestMessage || options.requestTrace -> {
+                val inputName = options.inputName ?: getInputName(context, input)
+                when (valid) {
+                    true -> getValidMessage(context, inputName)
+                    false -> getInvalidMessage(context, inputName)
+                }
+            }
+            else -> null
+        }
+
+    protected abstract fun isValid(input: T, options: Options): Boolean
+
+    // endregion Methods
+
+    // region Companion object
+
+    companion object {
+
+        @JvmStatic
+        fun missingContextException(
+            methodName: String
+        ): Exception = IllegalStateException(
+            Validatinator::class.java.simpleName +
+                    " requires a context in order to call $methodName method"
+        )
+
+        @JvmStatic
+        protected fun Options.ensureTrace(): ArrayList<ValidatinatorTraceElement> =
+            outTrace ?: ArrayList<ValidatinatorTraceElement>().apply {
+                outTrace = this
+            }
+
+    }
+
+    // endregion Companion object
 
     abstract class AbsBuilder<T, V : Validatinator<T>, B : AbsBuilder<T, V, B>> {
 
         protected var context: Context? = null
+        val v: V? = null
 
-        protected var inputName: CharSequence? = null
+        protected open var getInputName: (context: Context?, input: T) -> CharSequence? =
+            { context, input ->
+                context?.getString(R.string.validatinator_the_value) ?: "\"$input\""
+            }
 
-        protected var validMessage: (input: T) -> CharSequence? = { input ->
-            getValidMessage(context, inputName, input)
+        protected open var getInvalidMessage: (
+            context: Context?,
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_invalid, inputName)
+                ?: throw missingContextException("getInvalidMessage")
         }
 
-        protected var invalidMessage: (input: T) -> CharSequence? = { input ->
-            getInvalidMessage(context, inputName, input)
+        protected open var getValidMessage: (
+            context: Context?,
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_valid, inputName)
+                ?: throw missingContextException("getValidMessage")
         }
 
         protected abstract val thisBuilder: B
 
-        protected open fun getValidMessage(
-            context: Context?,
-            inputName: CharSequence?,
-            input: T
-        ): CharSequence? = context?.getString(
-            R.string.validatinator_valid,
-            inputName ?: "\"$input\""
-        )
-
-        protected open fun getInvalidMessage(
-            context: Context?,
-            inputName: CharSequence?,
-            input: T
-        ): CharSequence? = context?.getString(
-            R.string.validatinator_invalid,
-            inputName ?: "\"$input\""
-        )
-
-        fun context(context: Context): B {
+        fun context(context: Context?): B {
             this.context = context
             return thisBuilder
         }
 
+        fun inputName(getInputName: (context: Context?, input: T) -> CharSequence?): B {
+            this.getInputName = getInputName
+            return thisBuilder
+        }
+
         fun inputName(inputName: CharSequence?): B {
-            this.inputName = inputName
+            this.getInputName = { _, _ -> inputName }
             return thisBuilder
         }
 
-        fun validMessage(validMessage: (input: T) -> CharSequence?): B {
-            this.validMessage = validMessage
-            return thisBuilder
-        }
-
-        fun validMessage(validMessage: CharSequence?): B {
-            this.validMessage = { validMessage }
-            return thisBuilder
-        }
-
-        fun invalidMessage(invalidMessage: (input: T) -> CharSequence?): B {
-            this.invalidMessage = invalidMessage
+        fun invalidMessage(
+            getInvalidMessage: (
+                context: Context?,
+                inputName: CharSequence?
+            ) -> CharSequence?
+        ): B {
+            this.getInvalidMessage = getInvalidMessage
             return thisBuilder
         }
 
         fun invalidMessage(invalidMessage: CharSequence?): B {
-            this.invalidMessage = { invalidMessage }
+            this.getInvalidMessage = { _, _ -> invalidMessage }
+            return thisBuilder
+        }
+
+        fun validMessage(
+            getValidMessage: (
+                context: Context?,
+                inputName: CharSequence?
+            ) -> CharSequence?
+        ): B {
+            this.getValidMessage = getValidMessage
+            return thisBuilder
+        }
+
+        fun validMessage(validMessage: CharSequence?): B {
+            this.getValidMessage = { _, _ -> validMessage }
             return thisBuilder
         }
 
         abstract fun build(): V
 
     }
+
+    data class ValidatinatorTraceElement(
+
+        val validatinator: Validatinator<*>,
+
+        val valid: Boolean,
+
+        val message: CharSequence?
+
+    )
+
+    class Options {
+
+        var requestMessage: Boolean = false
+
+        var requestTrace: Boolean = false
+
+        var inputName: CharSequence? = null
+
+        var outMessage: CharSequence? = null
+
+        var outTrace: ArrayList<ValidatinatorTraceElement>? = null
+
+        fun clear(): Options = this.apply {
+            outMessage = null
+            outTrace = null
+        }
+
+        fun copy(): Options = Options().apply {
+            requestMessage = this@Options.requestMessage
+            requestTrace = this@Options.requestTrace
+            inputName = this@Options.inputName
+        }
+
+    }
+
 }

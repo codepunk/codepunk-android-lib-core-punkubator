@@ -20,37 +20,42 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-class MinLengthValidatinator protected constructor(
-    validMessage: (input: CharSequence?) -> CharSequence?,
-    invalidMessage: (input: CharSequence?) -> CharSequence?,
-    protected val minLength: Int = 0
-) : SimpleValidatinator<CharSequence?>(validMessage, invalidMessage) {
+open class MinLengthValidatinator protected constructor(
+    context: Context?,
+    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    protected val minLength: Int
+) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun isValid(input: CharSequence?): Boolean =
+    override fun isValid(input: CharSequence?, options: Options): Boolean =
         input != null && input.length >= minLength
 
-    class Builder(
+    open class Builder(minLength: Int = Integer.MAX_VALUE) :
+        AbsBuilder<CharSequence?, MinLengthValidatinator, Builder>() {
 
-        val minLength: Int = 0
+        protected val minLength = Math.max(minLength, 0)
 
-    ) : AbsBuilder<CharSequence?, MinLengthValidatinator, Builder>() {
-
-        override val thisBuilder: Builder = this
-
-        override fun getInvalidMessage(
+        override var getInvalidMessage: (
             context: Context?,
-            inputName: CharSequence?,
-            input: CharSequence?
-        ): CharSequence? = context?.run {
-            getString(
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(
                 R.string.validatinator_invalid_min,
-                inputName ?: "\"$input\"",
-                minLength
-            )
+                inputName,
+                this.minLength
+            ) ?: throw missingContextException("getInvalidMessage")
         }
 
-        override fun build(): MinLengthValidatinator =
-            MinLengthValidatinator(validMessage, invalidMessage, minLength)
+        override val thisBuilder: Builder by lazy { this }
+
+        override fun build(): MinLengthValidatinator = MinLengthValidatinator(
+            context,
+            getInputName,
+            getInvalidMessage,
+            getValidMessage,
+            minLength
+        )
 
     }
 

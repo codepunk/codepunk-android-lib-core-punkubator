@@ -20,37 +20,42 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-class MaxLengthValidatinator protected constructor(
-    validMessage: (input: CharSequence?) -> CharSequence?,
-    invalidMessage: (input: CharSequence?) -> CharSequence?,
-    protected val maxLength: Int = Integer.MAX_VALUE
-) : SimpleValidatinator<CharSequence?>(validMessage, invalidMessage) {
+open class MaxLengthValidatinator protected constructor(
+    context: Context?,
+    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    protected val maxLength: Int
+) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun isValid(input: CharSequence?): Boolean =
+    override fun isValid(input: CharSequence?, options: Options): Boolean =
         input != null && input.length <= maxLength
 
-    class Builder(
+    open class Builder(maxLength: Int = 0) :
+        AbsBuilder<CharSequence?, MaxLengthValidatinator, Builder>() {
 
-        val maxLength: Int = Integer.MAX_VALUE
+        protected val maxLength: Int = Math.max(maxLength, 0)
 
-    ) : AbsBuilder<CharSequence?, MaxLengthValidatinator, Builder>() {
-
-        override val thisBuilder: Builder = this
-
-        override fun getInvalidMessage(
+        override var getInvalidMessage: (
             context: Context?,
-            inputName: CharSequence?,
-            input: CharSequence?
-        ): CharSequence? = context?.run {
-            getString(
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(
                 R.string.validatinator_invalid_max,
-                inputName ?: "\"$input\"",
-                maxLength
-            )
+                inputName,
+                this.maxLength
+            ) ?: throw missingContextException("getInvalidMessage")
         }
 
-        override fun build(): MaxLengthValidatinator =
-            MaxLengthValidatinator(validMessage, invalidMessage, maxLength)
+        override val thisBuilder: Builder by lazy { this }
+
+        override fun build(): MaxLengthValidatinator = MaxLengthValidatinator(
+            context,
+            getInputName,
+            getInvalidMessage,
+            getValidMessage,
+            maxLength
+        )
 
     }
 

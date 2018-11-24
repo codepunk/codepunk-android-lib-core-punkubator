@@ -17,7 +17,7 @@
 
 <resources>
 
-    <string name="validatinator_value_name">The value</string>
+    <string name="validatinator_the_value">The value</string>
 
     <string name="validatinator_this_value">This value</string>
 
@@ -41,5 +41,9 @@
     <string name="validatinator_invalid_pattern">%1$s format is invalid.</string>
 
     <string name="validatinator_invalid_required">%1$s is required.</string>
+
+    <string name="validatinator_valid_set">%1$s passed at least one validation in the set.</string>
+
+    <string name="validatinator_invalid_set">%1$s failed at least one validation in the set.</string>
 
 </resources>

@@ -17,94 +17,118 @@
 
 package com.codepunk.punkubator.util.validatinator
 
-import java.util.*
+import android.content.Context
+import com.codepunk.punkubator.R
 
 open class ValidatinatorSet<T> protected constructor(
-    validMessage: (input: T) -> CharSequence?,
-    invalidMessage: (input: T) -> CharSequence?,
+    context: Context?,
+    getInputName: (context: Context?, input: T) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
     protected val validatinators: Iterable<Validatinator<T>>,
-    protected val style: Style = Style.ALL,
-    protected val validateAll: Boolean = false
-) : Validatinator<T>(validMessage, invalidMessage) {
+    protected val constraint: Constraint,
+    protected val processAll: Boolean
+) : Validatinator<T>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun validate(input: T): Result<T> {
-        var cause: Result<T>? = null
-        val trace = ArrayList<Result<T>>()
-        var anyValid = false
-        var anyInvalid = false
-        for (validatinator in validatinators) {
-            val result = validatinator.validate(input)
-            trace.add(result)
-            if (result.valid) {
-                anyValid = true
-                if (style == Style.ANY && cause == null) {
-                    cause = result
-                }
-            } else {
-                anyInvalid = true
-                if (style == Style.ALL && cause == null) {
-                    cause = result
+    override fun isValid(input: T, options: Options): Boolean {
+        var valid: Boolean = when (constraint) {
+            Constraint.ALL -> true
+            Constraint.ANY -> false
+        }
+
+        var foundCause = false
+        for (innerValidatinator in validatinators) {
+            val innerOptions = options.copy()
+            val innerValid = innerValidatinator.validate(input, innerOptions)
+
+            // Add elements in inner trace to the outer trace if applicable
+            if (options.requestTrace && innerOptions.outTrace != null) {
+                innerOptions.outTrace?.run {
+                    options.ensureTrace().addAll(this)
                 }
             }
-            if (cause != null && !validateAll) {
-                break
+
+            // Check for the "cause" validatinator. This is the validatinator that potentially
+            // determines the valid property of the entire set.
+            if (!foundCause) {
+                foundCause = when {
+                    innerValid && constraint == Constraint.ANY -> true
+                    !innerValid && constraint == Constraint.ALL -> true
+                    else -> false
+                }
+
+                if (foundCause) {
+                    valid = innerValid
+                    options.outMessage = innerOptions.outMessage
+                    if (!processAll) {
+                        break
+                    }
+                }
             }
         }
-        val valid = when (style) {
-            Style.ANY -> anyValid
-            Style.ALL -> !anyInvalid
-        }
-        val message = cause?.message ?: when (valid) {
-            true -> validMessage(input)
-            false -> invalidMessage(input)
-        }
-        return Result(
-            valid,
-            input,
-            message,
-            cause,
-            Collections.unmodifiableList(trace)
-        )
-    }
 
-    enum class Style {
-        ANY,
-        ALL
+        if (options.requestMessage && options.outMessage == null) {
+            options.outMessage = generateMessage(input, valid, options)
+        }
+
+        return valid
     }
 
     open class Builder<T> : AbsBuilder<T, ValidatinatorSet<T>, Builder<T>>() {
 
-        override val thisBuilder: Builder<T> = this
-
         protected val validatinators = ArrayList<Validatinator<T>>()
 
-        protected var style = Style.ALL
+        protected var constraint: Constraint = Constraint.ALL
 
-        protected var validateAll = false
+        protected var processAll: Boolean = false
+
+        override val thisBuilder: Builder<T> by lazy { this }
+
+        override var getInvalidMessage: (
+            context: Context?,
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_invalid_set, inputName)
+                ?: throw missingContextException("getInvalidMessage")
+        }
+
+        override var getValidMessage: (
+            context: Context?,
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_valid_set, inputName)
+                ?: throw missingContextException("getValidMessage")
+        }
 
         override fun build(): ValidatinatorSet<T> = ValidatinatorSet(
-            validMessage,
-            invalidMessage,
+            context,
+            getInputName,
+            getInvalidMessage,
+            getValidMessage,
             validatinators,
-            style,
-            validateAll
+            constraint,
+            processAll
         )
 
-        fun add(vararg validatinators: Validatinator<T>): Builder<T> {
-            this.validatinators.addAll(validatinators)
-            return this
+        fun add(vararg validatinator: Validatinator<T>): Builder<T> {
+            this.validatinators.addAll(validatinator)
+            return thisBuilder
         }
 
-        fun style(style: Style): Builder<T> {
-            this.style = style
-            return this
+        fun constraint(constraint: Constraint): Builder<T> {
+            this.constraint = constraint
+            return thisBuilder
         }
 
-        fun validateAll(validateAll: Boolean): Builder<T> {
-            this.validateAll = validateAll
-            return this
+        fun processAll(processAll: Boolean): Builder<T> {
+            this.processAll = processAll
+            return thisBuilder
         }
+    }
 
+    enum class Constraint {
+        ALL,
+        ANY
     }
 
 }

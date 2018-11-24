@@ -22,34 +22,36 @@ import com.codepunk.punkubator.R
 import java.util.regex.Pattern
 
 open class PatternValidatinator protected constructor(
-    validMessage: (input: CharSequence?) -> CharSequence?,
-    invalidMessage: (input: CharSequence?) -> CharSequence?,
+    context: Context?,
+    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
     protected val pattern: Pattern
-) : SimpleValidatinator<CharSequence?>(validMessage, invalidMessage) {
+) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun isValid(input: CharSequence?): Boolean = pattern.matcher(input).matches()
+    override fun isValid(input: CharSequence?, options: Options): Boolean =
+        pattern.matcher(input).matches()
 
-    class Builder(
+    open class Builder(protected val pattern: Pattern) :
+        AbsBuilder<CharSequence?, PatternValidatinator, Builder>() {
 
-        val pattern: Pattern
-
-    ) : AbsBuilder<CharSequence?, PatternValidatinator, Builder>() {
-
-        override val thisBuilder: Builder = this
-
-        override fun getInvalidMessage(
+        override var getInvalidMessage: (
             context: Context?,
-            inputName: CharSequence?,
-            input: CharSequence?
-        ): CharSequence? = context?.run {
-            getString(
-                R.string.validatinator_invalid_pattern,
-                inputName ?: "\"$input\""
-            )
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_invalid_pattern, inputName)
+                ?: throw missingContextException("getInvalidMessage")
         }
 
-        override fun build(): PatternValidatinator =
-            PatternValidatinator(validMessage, invalidMessage, pattern)
+        override val thisBuilder: Builder by lazy { this }
+
+        override fun build(): PatternValidatinator = PatternValidatinator(
+            context,
+            getInputName,
+            getInvalidMessage,
+            getValidMessage,
+            pattern
+        )
 
     }
 

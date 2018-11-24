@@ -20,30 +20,41 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-open class RequiredValidatinator protected constructor(
-    validMessage: (input: CharSequence?) -> CharSequence?,
-    invalidMessage: (input: CharSequence?) -> CharSequence?
-) : SimpleValidatinator<CharSequence?>(validMessage, invalidMessage) {
+class RequiredValidatinator protected constructor(
+    context: Context?,
+    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
+    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
+    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?
+) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun isValid(input: CharSequence?): Boolean = !input.isNullOrEmpty()
+    // region Inherited methods
+
+    override fun isValid(input: CharSequence?, options: Options): Boolean = !input.isNullOrEmpty()
+
+    // endregion Inherited methods
+
+    // region Nested/inner classes
 
     class Builder : AbsBuilder<CharSequence?, RequiredValidatinator, Builder>() {
 
-        override val thisBuilder: Builder = this
-
-        override fun getInvalidMessage(
+        override var getInvalidMessage: (
             context: Context?,
-            inputName: CharSequence?,
-            input: CharSequence?
-        ): CharSequence? = context?.run {
-            getString(
-                R.string.validatinator_invalid_required,
-                inputName ?: getString(R.string.validatinator_this_value)
-            )
+            inputName: CharSequence?
+        ) -> CharSequence? = { context, inputName ->
+            context?.getString(R.string.validatinator_invalid_required, inputName)
+                ?: throw missingContextException("getInvalidMessage")
         }
 
-        override fun build(): RequiredValidatinator =
-            RequiredValidatinator(validMessage, invalidMessage)
+        override val thisBuilder: Builder = this
+
+        override fun build(): RequiredValidatinator = RequiredValidatinator(
+            context,
+            getInputName,
+            getInvalidMessage,
+            getValidMessage
+        )
     }
+
+    // endregion Nested/inner classes
 
 }
