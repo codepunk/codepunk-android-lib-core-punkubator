@@ -53,7 +53,19 @@ abstract class Validatinator<T> protected constructor(
         if (options.requestTrace) {
             options.ensureTrace().add(ValidatinatorTraceElement(this, valid, message))
         }
+        when (valid) {
+            true -> onValid(input, options)
+            false -> onInvalid(input, options)
+        }
         return valid
+    }
+
+    protected open fun onInvalid(input: T, options: Options) {
+        // No op
+    }
+
+    protected open fun onValid(input: T, options: Options) {
+        // No op
     }
 
     protected fun generateMessage(input: T, valid: Boolean, options: Options): CharSequence? =
@@ -97,7 +109,6 @@ abstract class Validatinator<T> protected constructor(
     abstract class AbsBuilder<T, V : Validatinator<T>, B : AbsBuilder<T, V, B>> {
 
         protected var context: Context? = null
-        val v: V? = null
 
         protected open var getInputName: (context: Context?, input: T) -> CharSequence? =
             { context, input ->

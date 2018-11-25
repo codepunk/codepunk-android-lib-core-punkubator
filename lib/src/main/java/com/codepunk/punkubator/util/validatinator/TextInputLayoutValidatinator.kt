@@ -28,16 +28,14 @@ class TextInputLayoutValidatinator protected constructor(
     protected val wrapped: Validatinator<CharSequence?>
 ) : Validatinator<TextInputLayout>(context, getInputName, getInvalidMessage, getValidMessage) {
 
-    override fun validate(input: TextInputLayout, options: Options): Boolean =
-        super.validate(input, options).also { valid ->
-            input.error = when (valid) {
-                true -> null
-                false -> options.outMessage
-            }
-            if (!valid) {
-                input.requestFocus()
-            }
-        }
+    override fun onInvalid(input: TextInputLayout, options: Options) {
+        input.error = options.outMessage
+        input.requestFocus()
+    }
+
+    override fun onValid(input: TextInputLayout, options: Options) {
+        input.error = null
+    }
 
     override fun isValid(input: TextInputLayout, options: Options): Boolean {
         return wrapped.validate(input.editText?.text, options)
