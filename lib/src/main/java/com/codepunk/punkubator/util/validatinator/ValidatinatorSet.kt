@@ -19,47 +19,81 @@ package com.codepunk.punkubator.util.validatinator
 
 import android.content.Context
 import com.codepunk.punkubator.R
+import com.codepunk.punkubator.util.validatinator.ValidatinatorSet.Constraint.*
 
-open class ValidatinatorSet<T> protected constructor(
-    context: Context?,
-    getInputName: (context: Context?, input: T) -> CharSequence?,
-    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
-    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
-    protected val validatinators: Iterable<Validatinator<T>>,
-    protected val constraint: Constraint,
-    protected val processAll: Boolean
-) : Validatinator<T>(context, getInputName, getInvalidMessage, getValidMessage) {
+open class ValidatinatorSet<T>(
+    context: Context? = null,
+    inputName: CharSequence? = null,
+    invalidMessage: CharSequence? = null,
+    validMessage: CharSequence? = null,
+    protected val constraint: Constraint = ALL,
+    protected val processAll: Boolean = false
+) : Validatinator<T>(context, inputName, invalidMessage, validMessage) {
+
+    // region Inherited properties
+
+    override val invalidMessage: CharSequence?
+        get() = _invalidMessage ?: context.getString(
+            when (constraint) {
+                ALL -> R.string.validatinator_invalid_set_all
+                ANY -> R.string.validatinator_invalid_set_any
+            },
+            inputName
+        )
+
+    override val validMessage: CharSequence?
+        get() = _validMessage ?: context.getString(
+            when (constraint) {
+                ALL -> R.string.validatinator_valid_set_all
+                ANY -> R.string.validatinator_valid_set_any
+            },
+            inputName
+        )
+
+    // endregion Inherited properties
+
+    // region Properties
+
+    protected val validatinators = ArrayList<Validatinator<in T>>()
+
+    // endregion Properties
+
+    // region Constructors
+
+    constructor(
+        context: Context? = null,
+        inputName: CharSequence? = null,
+        constraint: Constraint,
+        processAll: Boolean = false
+    ) : this(context, inputName, null, null, constraint, processAll)
+
+    // endregion Constructors
+
+    // region Inherited methods
 
     override fun isValid(input: T, options: Options): Boolean {
         var valid: Boolean = when (constraint) {
-            Constraint.ALL -> true
-            Constraint.ANY -> false
+            ALL -> true
+            ANY -> false
         }
 
-        var foundCause = false
+        var cause: Options? = null
         for (innerValidatinator in validatinators) {
             val innerOptions = options.copy()
             val innerValid = innerValidatinator.validate(input, innerOptions)
-
-            // Add elements in inner trace to the outer trace if applicable
-            if (options.requestTrace && innerOptions.outTrace != null) {
-                innerOptions.outTrace?.run {
-                    options.ensureTrace().addAll(this)
-                }
+            innerOptions.outTrace?.also { innerTrace ->
+                options.ensureTrace().addAll(innerTrace)
             }
 
-            // Check for the "cause" validatinator. This is the validatinator that potentially
-            // determines the valid property of the entire set.
-            if (!foundCause) {
-                foundCause = when {
-                    innerValid && constraint == Constraint.ANY -> true
-                    !innerValid && constraint == Constraint.ALL -> true
-                    else -> false
+            if (cause == null) {
+                when {
+                    innerValid && constraint == ANY -> cause = innerOptions
+                    !innerValid && constraint == ALL -> cause = innerOptions
                 }
 
-                if (foundCause) {
+                if (cause != null) {
                     valid = innerValid
-                    options.outMessage = innerOptions.outMessage
+                    options.outMessage = cause.outMessage
                     if (!processAll) {
                         break
                     }
@@ -68,67 +102,33 @@ open class ValidatinatorSet<T> protected constructor(
         }
 
         if (options.requestMessage && options.outMessage == null) {
-            options.outMessage = generateMessage(input, valid, options)
+            options.outMessage = when (valid) {
+                true -> validMessage
+                false -> invalidMessage
+            }
         }
 
         return valid
     }
 
-    open class Builder<T> : AbsBuilder<T, ValidatinatorSet<T>, Builder<T>>() {
+    // endregion Inherited methods
 
-        protected val validatinators = ArrayList<Validatinator<T>>()
+    // region Methods
 
-        protected var constraint: Constraint = Constraint.ALL
-
-        protected var processAll: Boolean = false
-
-        override val thisBuilder: Builder<T> by lazy { this }
-
-        override var getInvalidMessage: (
-            context: Context?,
-            inputName: CharSequence?
-        ) -> CharSequence? = { context, inputName ->
-            context?.getString(R.string.validatinator_invalid_set, inputName)
-                ?: throw missingContextException("getInvalidMessage")
-        }
-
-        override var getValidMessage: (
-            context: Context?,
-            inputName: CharSequence?
-        ) -> CharSequence? = { context, inputName ->
-            context?.getString(R.string.validatinator_valid_set, inputName)
-                ?: throw missingContextException("getValidMessage")
-        }
-
-        override fun build(): ValidatinatorSet<T> = ValidatinatorSet(
-            context,
-            getInputName,
-            getInvalidMessage,
-            getValidMessage,
-            validatinators,
-            constraint,
-            processAll
-        )
-
-        fun add(vararg validatinator: Validatinator<T>): Builder<T> {
-            this.validatinators.addAll(validatinator)
-            return thisBuilder
-        }
-
-        fun constraint(constraint: Constraint): Builder<T> {
-            this.constraint = constraint
-            return thisBuilder
-        }
-
-        fun processAll(processAll: Boolean): Builder<T> {
-            this.processAll = processAll
-            return thisBuilder
-        }
+    fun add(vararg validatinators: Validatinator<in T>): ValidatinatorSet<T> {
+        this.validatinators.addAll(validatinators)
+        return this
     }
+
+    // endregion Methods
+
+    // region Nested/inner classes
 
     enum class Constraint {
         ALL,
         ANY
     }
+
+    // endregion Nested/inner classes
 
 }

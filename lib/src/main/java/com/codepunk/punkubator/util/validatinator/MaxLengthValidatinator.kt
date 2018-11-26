@@ -20,43 +20,46 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-open class MaxLengthValidatinator protected constructor(
-    context: Context?,
-    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
-    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
-    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
-    protected val maxLength: Int
-) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
+open class MaxLengthValidatinator(
+    context: Context? = null,
+    inputName: CharSequence? = null,
+    invalidMessage: CharSequence? = null,
+    validMessage: CharSequence? = null,
+    maxLength: Int = Integer.MAX_VALUE
+) : Validatinator<CharSequence?>(context, inputName, invalidMessage, validMessage) {
+
+    // region Inherited properties
+
+    override val invalidMessage: CharSequence?
+        get() = _invalidMessage ?: context.getString(
+            R.string.validatinator_invalid_max,
+            inputName,
+            maxLength
+        )
+
+    // endregion Inherited properties
+
+    // region Properties
+
+    protected val maxLength = Math.max(maxLength, 0)
+
+    // endregion Properties
+
+    // region Constructors
+
+    constructor(
+        context: Context? = null,
+        inputName: CharSequence? = null,
+        maxLength: Int
+    ) : this(context, inputName, null, null, maxLength)
+
+    // endregion Constructors
+
+    // region Inherited methods
 
     override fun isValid(input: CharSequence?, options: Options): Boolean =
         input != null && input.length <= maxLength
 
-    open class Builder(maxLength: Int = 0) :
-        AbsBuilder<CharSequence?, MaxLengthValidatinator, Builder>() {
-
-        protected val maxLength: Int = Math.max(maxLength, 0)
-
-        override var getInvalidMessage: (
-            context: Context?,
-            inputName: CharSequence?
-        ) -> CharSequence? = { context, inputName ->
-            context?.getString(
-                R.string.validatinator_invalid_max,
-                inputName,
-                this.maxLength
-            ) ?: throw missingContextException("getInvalidMessage")
-        }
-
-        override val thisBuilder: Builder by lazy { this }
-
-        override fun build(): MaxLengthValidatinator = MaxLengthValidatinator(
-            context,
-            getInputName,
-            getInvalidMessage,
-            getValidMessage,
-            maxLength
-        )
-
-    }
+    // endregion Inherited methods
 
 }

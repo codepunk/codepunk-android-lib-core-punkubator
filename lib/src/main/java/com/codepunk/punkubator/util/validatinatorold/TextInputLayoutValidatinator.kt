@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.codepunk.punkubator.util.validatinator
+package com.codepunk.punkubator.util.validatinatorold
 
 import android.content.Context
 import com.google.android.material.textfield.TextInputLayout

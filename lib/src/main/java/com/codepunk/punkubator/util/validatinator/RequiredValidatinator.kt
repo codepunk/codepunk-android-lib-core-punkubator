@@ -20,41 +20,21 @@ package com.codepunk.punkubator.util.validatinator
 import android.content.Context
 import com.codepunk.punkubator.R
 
-class RequiredValidatinator protected constructor(
-    context: Context?,
-    getInputName: (context: Context?, input: CharSequence?) -> CharSequence?,
-    getInvalidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?,
-    getValidMessage: (context: Context?, inputName: CharSequence?) -> CharSequence?
-) : Validatinator<CharSequence?>(context, getInputName, getInvalidMessage, getValidMessage) {
+abstract class RequiredValidatinator<T>(
+    context: Context? = null,
+    inputName: CharSequence? = null,
+    invalidMessage: CharSequence? = null,
+    validMessage: CharSequence? = null
+) : Validatinator<T>(context, inputName, invalidMessage, validMessage) {
 
-    // region Inherited methods
+    // region Inherited properties
 
-    override fun isValid(input: CharSequence?, options: Options): Boolean = !input.isNullOrEmpty()
-
-    // endregion Inherited methods
-
-    // region Nested/inner classes
-
-    class Builder : AbsBuilder<CharSequence?, RequiredValidatinator, Builder>() {
-
-        override var getInvalidMessage: (
-            context: Context?,
-            inputName: CharSequence?
-        ) -> CharSequence? = { context, inputName ->
-            context?.getString(R.string.validatinator_invalid_required, inputName)
-                ?: throw missingContextException("getInvalidMessage")
-        }
-
-        override val thisBuilder: Builder = this
-
-        override fun build(): RequiredValidatinator = RequiredValidatinator(
-            context,
-            getInputName,
-            getInvalidMessage,
-            getValidMessage
+    override val invalidMessage: CharSequence?
+        get() = _invalidMessage ?: context.getString(
+            R.string.validatinator_invalid_required,
+            inputName
         )
-    }
 
-    // endregion Nested/inner classes
+    // endregion Inherited properties
 
 }

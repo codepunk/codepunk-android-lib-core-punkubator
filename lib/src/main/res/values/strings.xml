@@ -27,9 +27,15 @@
 
     <string name="validatinator_invalid">%1$s is not valid.</string>
 
+    <string name="validatinator_invalid_max">%1$s may not be greater than %2$d characters.</string>
+
     <string name="validatinator_invalid_min">%1$s must be at least %2$d characters.</string>
 
-    <string name="validatinator_invalid_max">%1$s may not be greater than %2$d characters.</string>
+    <string name="validatinator_invalid_pattern">%1$s format is invalid.</string>
+
+    <string name="validatinator_invalid_pattern_email">%1$s must be a valid email address.</string>
+
+    <string name="validatinator_invalid_pattern_word_character">%1$s may only contain alphanumeric characters and underscores.</string>
 
     <string name="validatinator_invalid_range">%1$s must be between %2$d and %3$d characters.</string>
 
@@ -38,12 +44,14 @@
         <item quantity="other">%1$s must be exactly %2$d characters in length.</item>
     </plurals>
 
-    <string name="validatinator_invalid_pattern">%1$s format is invalid.</string>
-
     <string name="validatinator_invalid_required">%1$s is required.</string>
 
-    <string name="validatinator_valid_set">%1$s passed at least one validation in the set.</string>
+    <string name="validatinator_invalid_set_all">%1$s failed at least one validation in the set.</string>
 
-    <string name="validatinator_invalid_set">%1$s failed at least one validation in the set.</string>
+    <string name="validatinator_invalid_set_any">%1$s did not pass any validations in the set.</string>
+
+    <string name="validatinator_valid_set_all">%1$s passed all validations in the set.</string>
+
+    <string name="validatinator_valid_set_any">%1$s passed at least one validation in the set.</string>
 
 </resources>

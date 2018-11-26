@@ -18,42 +18,30 @@
 package com.codepunk.punkubator.util.validatinator
 
 import android.content.Context
+import androidx.core.util.PatternsCompat
 import com.codepunk.punkubator.R
-import java.util.regex.Pattern
 
-open class PatternValidatinator(
+class EmailValidatinator(
     context: Context? = null,
     inputName: CharSequence? = null,
     invalidMessage: CharSequence? = null,
-    validMessage: CharSequence? = null,
-    protected val pattern: Pattern
-) : Validatinator<CharSequence?>(context, inputName, invalidMessage, validMessage) {
+    validMessage: CharSequence? = null
+) : PatternValidatinator(
+    context,
+    inputName,
+    invalidMessage,
+    validMessage,
+    PatternsCompat.EMAIL_ADDRESS
+) {
 
     // region Inherited properties
 
     override val invalidMessage: CharSequence?
         get() = _invalidMessage ?: context.getString(
-            R.string.validatinator_invalid_pattern,
+            R.string.validatinator_invalid_pattern_email,
             inputName
         )
 
     // endregion Inherited properties
-
-    // region Constructors
-
-    constructor(
-        context: Context? = null,
-        inputName: CharSequence? = null,
-        pattern: Pattern
-    ) : this(context, inputName, null, null, pattern)
-
-    // endregion Constructors
-
-    // region Inherited methods
-
-    override fun isValid(input: CharSequence?, options: Options): Boolean =
-        pattern.matcher(input).matches()
-
-    // endregion Inherited methods
 
 }
