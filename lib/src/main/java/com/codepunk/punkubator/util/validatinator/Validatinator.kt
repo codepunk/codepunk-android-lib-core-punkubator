@@ -21,7 +21,7 @@ import android.content.Context
 import com.codepunk.punkubator.R
 import java.lang.IllegalStateException
 
-abstract class Validatinator<T>(
+abstract class Validatinator<in T>(
     context: Context? = null,
     inputName: CharSequence? = null,
     invalidMessage: CharSequence? = null,
@@ -137,6 +137,11 @@ abstract class Validatinator<T>(
         var outMessage: CharSequence? = null
 
         var outTrace: ArrayList<ValidatinatorTraceElement>? = null
+
+        fun clear(): Options = apply {
+            outMessage = null
+            outTrace = null
+        }
 
         fun copy(): Options = Options().also {
             it.requestMessage = requestMessage

@@ -115,7 +115,7 @@ open class ValidatinatorSet<T>(
 
     // region Methods
 
-    fun add(vararg validatinators: Validatinator<in T>): ValidatinatorSet<T> {
+    fun add(vararg validatinators: Validatinator<T>): ValidatinatorSet<T> {
         this.validatinators.addAll(validatinators)
         return this
     }

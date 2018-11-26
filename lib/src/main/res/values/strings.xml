@@ -27,6 +27,8 @@
 
     <string name="validatinator_invalid">%1$s is not valid.</string>
 
+    <string name="validatinator_invalid_match">%1$s does not match.</string>
+
     <string name="validatinator_invalid_max">%1$s may not be greater than %2$d characters.</string>
 
     <string name="validatinator_invalid_min">%1$s must be at least %2$d characters.</string>
