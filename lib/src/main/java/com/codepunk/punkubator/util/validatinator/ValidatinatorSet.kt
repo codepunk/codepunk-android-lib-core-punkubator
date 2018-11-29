@@ -54,7 +54,7 @@ open class ValidatinatorSet<T>(
 
     // region Properties
 
-    protected val validatinators = ArrayList<Validatinator<in T>>()
+    protected val validatinators = ArrayList<Validatinator<T>>()
 
     // endregion Properties
 
