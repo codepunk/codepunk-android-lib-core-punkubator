@@ -1,3 +1,5 @@
+import com.android.build.gradle.api.BaseVariant
+
 /*
  * Copyright (C) 2018 Codepunk, LLC
  *
@@ -24,7 +26,7 @@ buildscript {
     addRepos(repositories)
 
     dependencies {
-        classpath deps.dokka.plugin
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:${rootProject.versions.dokka}"
     }
 }
 
@@ -48,26 +50,45 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    libraryVariants.all { variant ->
+
+        /*
+        makeKeys(
+                variant,
+                "ADD_KEYS_HERE"
+        )
+        */
+
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation rootProject.deps.android.material
-    implementation rootProject.deps.androidx.app_compat
-    implementation rootProject.deps.androidx.legacy
-    implementation rootProject.deps.androidx.preference
-    implementation rootProject.deps.kotlin.stdlib
+//    implementation rootProject.deps.android.material
+    implementation "androidx.appcompat:appcompat:${rootProject.versions.androidx_appcompat}"
+//    implementation rootProject.deps.androidx.legacy
+    implementation "androidx.preference:preference:${rootProject.versions.androidx_legacy}"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.versions.kotlin}"
 
-    kapt rootProject.deps.kotlin.compiler
+//    kapt rootProject.deps.kotlin.compiler
 
-    testImplementation rootProject.deps.junit
+    testImplementation "junit:junit:${rootProject.versions.junit}"
 
-    androidTestImplementation rootProject.deps.atsl.runner
-    androidTestImplementation rootProject.deps.espresso.core
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${rootProject.versions.test_espresso_core}"
+    androidTestImplementation "com.android.support.test:runner:${rootProject.versions.test_runner}"
 }
 
 dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
     includeNonPublic = true
+}
+
+static def makeKeys(BaseVariant variant, String... keys) {
+    keys.each { key ->
+        def buildConfigName = "KEY_$key"
+        def buildConfigValue = "\"${variant.applicationId}.$key\""
+        variant.buildConfigField("String", buildConfigName, buildConfigValue)
+    }
 }
