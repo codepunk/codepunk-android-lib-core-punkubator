@@ -22,12 +22,12 @@
     <integer name="texture_view_default_primary_pan_delay">1000</integer>
 
     <!-- Used as the default primary pan duration for TextureViewPanner. -->
-    <integer name="texture_view_default_primary_pan_duration">60000</integer>
+    <integer name="texture_view_default_primary_pan_duration">17500</integer>
 
     <!-- Used as the default secondary pan delay for TextureViewPanner. -->
     <integer name="texture_view_default_secondary_pan_delay">2000</integer>
 
     <!-- Used as the default secondary pan duration for TextureViewPanner. -->
-    <integer name="texture_view_default_secondary_pan_duration">40000</integer>
+    <integer name="texture_view_default_secondary_pan_duration">12000</integer>
 
 </resources>

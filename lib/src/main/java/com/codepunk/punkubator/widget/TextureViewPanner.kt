@@ -22,11 +22,9 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.graphics.Matrix
 import android.graphics.PointF
-import android.util.Log
 import android.view.TextureView
-import android.view.animation.CycleInterpolator
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.codepunk.punkubator.R
-import com.codepunk.punkubator.util.cycleInterpolatorInverse
 import com.codepunk.punkubator.widget.TextureViewPanner.Builder
 import com.codepunk.punkubator.widget.TextureViewPanner.Style
 import java.util.*
@@ -162,50 +160,32 @@ class TextureViewPanner private constructor(
 
         val animators: ArrayList<ValueAnimator> = ArrayList()
         if (hAttributes != null && sx > hAttributes.threshold) {
-            val hAnimator = createAnimator(hAttributes)
-
-            val minDx = textureView.width * (1 - sx)
-            val maxDx = 0.0f
-            val midDx = (minDx + maxDx) / 2.0f
-            val animatedFraction = (values[Matrix.MTRANS_X] - midDx) / (maxDx - midDx)
-            val timeFraction = cycleInterpolatorInverse(1.0f, animatedFraction)
-            val currentPlayTime = (hAnimator.duration * timeFraction).toLong()
-            hAnimator.currentPlayTime = when {
-                currentPlayTime >= 0 -> currentPlayTime
-                else -> hAnimator.duration + currentPlayTime
-            }
-
+            val valueFrom = 0.0f
+            val valueTo = textureView.width * (1 - sx)
+            val valueCurrent = values[Matrix.MTRANS_X]
+            val hAnimator = createAnimator(hAttributes, valueFrom, valueTo)
+            setCurrentPlayTime(hAnimator, valueFrom, valueTo, valueCurrent)
             hAnimator.addUpdateListener {
-                val pct = (it.animatedFraction - LOW_VALUE) / (TO_VALUE - LOW_VALUE)
-                values[Matrix.MTRANS_X] = minDx + (maxDx - minDx) * pct
+                values[Matrix.MTRANS_X] = it.animatedValue as Float
                 invalidateTransform()
             }
             animators.add(hAnimator)
         }
 
         if (vAttributes != null && sy > vAttributes.threshold) {
-            val vAnimator = createAnimator(vAttributes)
-
-            val minDy = textureView.height * (1 - sy)
-            val maxDy = 0.0f
-            val midDy = (minDy + maxDy) / 2.0f
-            val animatedFraction = (values[Matrix.MTRANS_Y] - midDy) / (maxDy - midDy)
-            val timeFraction = cycleInterpolatorInverse(1.0f, animatedFraction)
-            val currentPlayTime = (vAnimator.duration * timeFraction).toLong()
-            vAnimator.currentPlayTime = when {
-                currentPlayTime >= 0 -> currentPlayTime
-                else -> vAnimator.duration + currentPlayTime
-            }
-
+            val valueFrom = 0.0f
+            val valueTo = textureView.height * (1 - sy)
+            val valueCurrent = values[Matrix.MTRANS_Y]
+            val vAnimator = createAnimator(vAttributes, valueFrom, valueTo)
+            setCurrentPlayTime(vAnimator, valueFrom, valueTo, valueCurrent)
             vAnimator.addUpdateListener {
-                val pct = (it.animatedFraction - LOW_VALUE) / (TO_VALUE - LOW_VALUE)
-                values[Matrix.MTRANS_Y] = minDy + (maxDy - minDy) * pct
+                values[Matrix.MTRANS_Y] = it.animatedValue as Float
                 invalidateTransform()
             }
             animators.add(vAnimator)
         }
 
-        animators.forEach { it.reverse() }
+        animators.forEach { it.start() }
     }
 
     // endregion methods
@@ -215,33 +195,42 @@ class TextureViewPanner private constructor(
     companion object {
 
         /**
-         * The "from value" for the [ValueAnimator].
-         */
-        private const val FROM_VALUE: Float = 0.0f
-
-        /**
-         * The "to value" for the [ValueAnimator].
-         */
-        private const val TO_VALUE: Float = 1.0f
-
-        /**
-         * The low value produced by the [CycleInterpolator], which is always equal to -TO_VALUE
-         * but provided here for convenience.
-         */
-        private const val LOW_VALUE: Float = -TO_VALUE
-
-        /**
          * Creates a [ValueAnimator] that cycles between two values.
          */
         @JvmStatic
-        private fun createAnimator(attributes: PanningAttributes): ValueAnimator =
-            ValueAnimator.ofFloat(FROM_VALUE, TO_VALUE).apply {
+        private fun createAnimator(
+            attributes: PanningAttributes,
+            vararg values: Float
+        ): ValueAnimator =
+            ValueAnimator.ofFloat(*values).apply {
                 startDelay = attributes.startDelay
                 duration = attributes.duration
-                interpolator = CycleInterpolator(1.0f)
+                interpolator = AccelerateDecelerateInterpolator()
+                repeatMode = ValueAnimator.REVERSE
                 repeatCount = ValueAnimator.INFINITE
             }
 
+        /**
+         * Given a from value, to value and current value, will calculate the inverse of the
+         * [AccelerateDecelerateInterpolator.getInterpolation] method and set the
+         * currentPlayTime of the supplied [animator] accordingly. NOTE: Assumes that the
+         * animator has a repeat mode of [ValueAnimator.REVERSE].
+         */
+        @JvmStatic
+        private fun setCurrentPlayTime(
+            animator: ValueAnimator,
+            valueFrom: Float,
+            valueTo: Float,
+            valueCurrent: Float
+        ) {
+            val animatedFraction: Float = (valueCurrent - valueFrom) / (valueTo - valueFrom)
+            val input = (Math.acos((animatedFraction.toDouble() - 0.5f) * 2.0f) - 1).toFloat()
+            val currentPlayTime = (animator.duration * input).toLong()
+
+            // This trick will place the play time at the correct location. We multiply duration
+            // by 2 because we have a repeat mode of ValueAnimator.REVERSE.
+            animator.currentPlayTime = animator.duration * 2 + currentPlayTime
+        }
     }
 
     // endregion Companion object
