@@ -17,17 +17,17 @@
   -->
 
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="space_s">4dp</dimen>
-    <dimen name="space_standard">8dp</dimen>
-    <dimen name="space_l">16dp</dimen>
-    <dimen name="space_xl">24dp</dimen>
-    <dimen name="space_xxl">48dp</dimen>
+    <!-- Used as the default primary pan delay for TextureViewPanner. -->
+    <integer name="texture_view_default_primary_pan_delay">1000</integer>
 
-    <dimen name="space_typography">@dimen/space_s</dimen>
-    <dimen name="space_iconography">@dimen/space_s</dimen>
-    <dimen name="space_baseline">@dimen/space_standard</dimen>
+    <!-- Used as the default primary pan duration for TextureViewPanner. -->
+    <integer name="texture_view_default_primary_pan_duration">60000</integer>
 
-    <dimen name="margin_screen">24dp</dimen>
+    <!-- Used as the default secondary pan delay for TextureViewPanner. -->
+    <integer name="texture_view_default_secondary_pan_delay">2000</integer>
+
+    <!-- Used as the default secondary pan duration for TextureViewPanner. -->
+    <integer name="texture_view_default_secondary_pan_duration">40000</integer>
+
 </resources>

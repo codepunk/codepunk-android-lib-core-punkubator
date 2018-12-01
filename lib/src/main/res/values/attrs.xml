@@ -17,17 +17,18 @@
   -->
 
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="space_s">4dp</dimen>
-    <dimen name="space_standard">8dp</dimen>
-    <dimen name="space_l">16dp</dimen>
-    <dimen name="space_xl">24dp</dimen>
-    <dimen name="space_xxl">48dp</dimen>
+    <!-- These are the standard attributes that make up a complete theme. -->
+    <declare-styleable name="Theme">
 
-    <dimen name="space_typography">@dimen/space_s</dimen>
-    <dimen name="space_iconography">@dimen/space_s</dimen>
-    <dimen name="space_baseline">@dimen/space_standard</dimen>
+        <!-- Default style for the TextureViewEx widget. -->
+        <attr name="textureViewExStyle" format="reference" />
 
-    <dimen name="margin_screen">24dp</dimen>
+    </declare-styleable>
+
+    <!-- The set of attributes that describe a TextureViewEx's theme. -->
+    <declare-styleable name="TextureViewEx">
+        <attr name="android:scaleType" />
+    </declare-styleable>
+
 </resources>
