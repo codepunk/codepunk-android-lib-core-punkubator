@@ -22,10 +22,13 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.graphics.Matrix
 import android.graphics.PointF
+import android.util.Log
 import android.view.TextureView
 import android.view.animation.CycleInterpolator
 import com.codepunk.punkubator.R
+import com.codepunk.punkubator.util.cycleInterpolatorInverse
 import com.codepunk.punkubator.widget.TextureViewPanner.Builder
+import com.codepunk.punkubator.widget.TextureViewPanner.Style
 import java.util.*
 
 /**
@@ -68,9 +71,11 @@ class TextureViewPanner private constructor(
     }
 
     /**
-     * An animator that pans the content in the [TextureView].
+     * An set of animators that pan the content in the [TextureView]. Normally we would wrap
+     * these in an [AnimatorSet] but we want to control the currentPlayTime of each individual
+     * animator so we'll keep them separate.
      */
-    private var animator: Animator? = null
+    private val animators = HashSet<Animator>()
 
     /**
      * A reusable bucket for storing transform information without constantly creating new matrices
@@ -115,8 +120,10 @@ class TextureViewPanner private constructor(
      * Ends and clears animations.
      */
     fun release() {
-        animator?.end()
-        animator = null
+        for (animator in animators) {
+            animator.end()
+        }
+        animators.clear()
     }
 
     /**
@@ -133,7 +140,7 @@ class TextureViewPanner private constructor(
 
         lastProcessedScale.set(sx, sy)
 
-        animator?.end()
+        release()
 
         // Resolve style attributes
         val hAttributes: PanningAttributes?
@@ -153,40 +160,52 @@ class TextureViewPanner private constructor(
             }
         }
 
-        val animators: ArrayList<Animator> = ArrayList()
+        val animators: ArrayList<ValueAnimator> = ArrayList()
         if (hAttributes != null && sx > hAttributes.threshold) {
-            val min = textureView.width * (1 - sx)
-            val max = 0.0f
             val hAnimator = createAnimator(hAttributes)
+
+            val minDx = textureView.width * (1 - sx)
+            val maxDx = 0.0f
+            val midDx = (minDx + maxDx) / 2.0f
+            val animatedFraction = (values[Matrix.MTRANS_X] - midDx) / (maxDx - midDx)
+            val timeFraction = cycleInterpolatorInverse(1.0f, animatedFraction)
+            val currentPlayTime = (hAnimator.duration * timeFraction).toLong()
+            hAnimator.currentPlayTime = when {
+                currentPlayTime >= 0 -> currentPlayTime
+                else -> hAnimator.duration + currentPlayTime
+            }
+
             hAnimator.addUpdateListener {
-                val pct = (it.animatedValue as Float - RANGE_LOW) / (RANGE_HI - RANGE_LOW)
-                values[Matrix.MTRANS_X] = min + (max - min) * pct
+                val pct = (it.animatedFraction - LOW_VALUE) / (TO_VALUE - LOW_VALUE)
+                values[Matrix.MTRANS_X] = minDx + (maxDx - minDx) * pct
                 invalidateTransform()
             }
             animators.add(hAnimator)
         }
 
         if (vAttributes != null && sy > vAttributes.threshold) {
-            val min = textureView.height * (1 - sy)
-            val max = 0.0f
             val vAnimator = createAnimator(vAttributes)
+
+            val minDy = textureView.height * (1 - sy)
+            val maxDy = 0.0f
+            val midDy = (minDy + maxDy) / 2.0f
+            val animatedFraction = (values[Matrix.MTRANS_Y] - midDy) / (maxDy - midDy)
+            val timeFraction = cycleInterpolatorInverse(1.0f, animatedFraction)
+            val currentPlayTime = (vAnimator.duration * timeFraction).toLong()
+            vAnimator.currentPlayTime = when {
+                currentPlayTime >= 0 -> currentPlayTime
+                else -> vAnimator.duration + currentPlayTime
+            }
+
             vAnimator.addUpdateListener {
-                val pct = (it.animatedValue as Float - RANGE_LOW) / (RANGE_HI - RANGE_LOW)
-                values[Matrix.MTRANS_Y] = min + (max - min) * pct
+                val pct = (it.animatedFraction - LOW_VALUE) / (TO_VALUE - LOW_VALUE)
+                values[Matrix.MTRANS_Y] = minDy + (maxDy - minDy) * pct
                 invalidateTransform()
             }
             animators.add(vAnimator)
         }
 
-        animator = when {
-            animators.isEmpty() -> null
-            else -> {
-                AnimatorSet().apply {
-                    playTogether(animators)
-                    start()
-                }
-            }
-        }
+        animators.forEach { it.reverse() }
     }
 
     // endregion methods
@@ -203,20 +222,13 @@ class TextureViewPanner private constructor(
         /**
          * The "to value" for the [ValueAnimator].
          */
-        private const val TO_VALUE: Float = -1.0f
+        private const val TO_VALUE: Float = 1.0f
 
         /**
-         * The minimum value produced by the [CycleInterpolator].
+         * The low value produced by the [CycleInterpolator], which is always equal to -TO_VALUE
+         * but provided here for convenience.
          */
-        @JvmStatic
-        private val RANGE_LOW =
-            Math.min(Math.min(FROM_VALUE, -FROM_VALUE), Math.min(TO_VALUE, -TO_VALUE))
-
-        /**
-         * The maximum value produced by the [CycleInterpolator].
-         */
-        @JvmStatic
-        private val RANGE_HI = -RANGE_LOW
+        private const val LOW_VALUE: Float = -TO_VALUE
 
         /**
          * Creates a [ValueAnimator] that cycles between two values.

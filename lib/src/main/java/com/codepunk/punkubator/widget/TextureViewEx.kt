@@ -23,9 +23,11 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.os.Build
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.TextureView
 import android.widget.ImageView
 import android.widget.ImageView.ScaleType
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import com.codepunk.punkubator.R
 
@@ -48,6 +50,15 @@ open class TextureViewEx : TextureView {
         }
 
     /**
+     * A gravity value that potentially overrides the placement resulting from [scaleType].
+     */
+    var gravity: Int = Gravity.NO_GRAVITY
+        set(value) {
+            field = value
+            updateTransform()
+        }
+
+    /**
      * A [Rect] holding the current content size. You can set this via [setContentSize].
      */
     @Suppress("WEAKER_ACCESS")
@@ -57,6 +68,16 @@ open class TextureViewEx : TextureView {
      * A reusable bucket for storing the transform matrix.
      */
     private val transform = Matrix()
+
+    /**
+     * A reusable bucket for storing the container when calling [Gravity.apply]
+     */
+    private val container = Rect()
+
+    /**
+     * A reusable bucket for storing the outRect when calling [Gravity.apply]
+     */
+    private val outRect = Rect()
 
     // endregion Properties
 
@@ -134,6 +155,9 @@ open class TextureViewEx : TextureView {
                 R.styleable.TextureViewEx_android_scaleType,
                 ScaleType.FIT_XY.ordinal
             )]
+
+            gravity = a.getInt(R.styleable.TextureViewEx_android_gravity, Gravity.NO_GRAVITY)
+
             a.recycle()
         }
     }
@@ -160,8 +184,6 @@ open class TextureViewEx : TextureView {
 
         transform.reset()
 
-        //val sw: Int = width
-        //val sh: Int = height
         val vw: Int = contentSize.width()
         val vh: Int = contentSize.height()
 
@@ -191,22 +213,23 @@ open class TextureViewEx : TextureView {
                 sx = ratioX * factor
                 sy = ratioY * factor
 
-                val scaledWidth = width * sx
-                val scaledHeight = height * sy
-                when (scaleType) {
-                    ScaleType.FIT_START -> {
-                        dx = 0.0f
-                        dy = 0.0f
-                    }
-                    ScaleType.FIT_END -> {
-                        dx = width - scaledWidth
-                        dy = height - scaledHeight
-                    }
-                    else -> {
-                        dx = (width - scaledWidth) / 2
-                        dy = (height - scaledHeight) / 2
-                    }
+                val gr = when {
+                    gravity != Gravity.NO_GRAVITY -> gravity
+                    scaleType == ScaleType.FIT_START -> Gravity.START or Gravity.TOP
+                    scaleType == ScaleType.FIT_END -> Gravity.END or Gravity.BOTTOM
+                    else -> Gravity.CENTER
                 }
+                container.set(0, 0, width, height)
+                GravityCompat.apply(
+                    gr,
+                    (width * sx).toInt(),
+                    (height * sy).toInt(),
+                    container,
+                    outRect,
+                    ViewCompat.getLayoutDirection(this)
+                )
+                dx = outRect.left.toFloat()
+                dy = outRect.top.toFloat()
             }
         }
 

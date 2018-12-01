@@ -29,6 +29,7 @@
     <!-- The set of attributes that describe a TextureViewEx's theme. -->
     <declare-styleable name="TextureViewEx">
         <attr name="android:scaleType" />
+        <attr name="android:gravity" format="integer" />
     </declare-styleable>
 
 </resources>
