@@ -33,25 +33,22 @@ abstract class Validatinator<in T>(
     protected val _context: Context? = context
 
     protected val _inputName: CharSequence? = inputName
+    protected open val inputName: CharSequence
+        get() = _inputName ?: context.getString(R.string.validatinator_the_value)
 
     protected val _invalidMessage: CharSequence? = invalidMessage
+    protected open val invalidMessage: CharSequence?
+        get() = _invalidMessage ?: context.getString(R.string.validatinator_invalid, inputName)
 
     protected val _validMessage: CharSequence? = validMessage
+    protected open val validMessage: CharSequence?
+        get() = _validMessage ?: context.getString(R.string.validatinator_valid, inputName)
 
     protected open val context: Context
         get() = _context ?: throw IllegalStateException(
             Validatinator::class.java.simpleName +
                     " requires a context in order to create localized messages"
         )
-
-    protected open val inputName: CharSequence
-        get() = _inputName ?: context.getString(R.string.validatinator_the_value)
-
-    protected open val invalidMessage: CharSequence?
-        get() = _invalidMessage ?: context.getString(R.string.validatinator_invalid, inputName)
-
-    protected open val validMessage: CharSequence?
-        get() = _validMessage ?: context.getString(R.string.validatinator_valid, inputName)
 
     // endregion Properties
 

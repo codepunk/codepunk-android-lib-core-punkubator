@@ -17,6 +17,7 @@ import com.android.build.gradle.api.BaseVariant
  */
 
 apply plugin: 'com.android.library'
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
@@ -69,6 +70,8 @@ dependencies {
     implementation "androidx.appcompat:appcompat:${rootProject.versions.androidx_appcompat}"
 //    implementation rootProject.deps.androidx.legacy
     implementation "androidx.preference:preference:${rootProject.versions.androidx_legacy}"
+//    implementation "com.android.support:design:${rootProject.versions.android_support_design}"
+    implementation "com.google.android.material:material:${rootProject.versions.material}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${rootProject.versions.kotlin}"
 
 //    kapt rootProject.deps.kotlin.compiler
