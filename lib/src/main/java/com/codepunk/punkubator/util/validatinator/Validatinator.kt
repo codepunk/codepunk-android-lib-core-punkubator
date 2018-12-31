@@ -87,12 +87,10 @@ abstract class Validatinator<in T>(
         return valid
     }
 
-    protected open fun onInvalid(input: T, options: Validatinator.Options) {
-        // No op
+    protected open fun onInvalid(input: T, options: Validatinator.Options) { /* No op */
     }
 
-    protected open fun onValid(input: T, options: Validatinator.Options) {
-        // No op
+    protected open fun onValid(input: T, options: Validatinator.Options) { /* No op */
     }
 
     protected abstract fun isValid(input: T, options: Options): Boolean
