@@ -19,15 +19,19 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="space_s">4dp</dimen>
-    <dimen name="space_standard">8dp</dimen>
-    <dimen name="space_l">16dp</dimen>
-    <dimen name="space_xl">24dp</dimen>
-    <dimen name="space_xxl">48dp</dimen>
+    <dimen name="size_standard">8dp</dimen>
 
-    <dimen name="space_typography">@dimen/space_s</dimen>
-    <dimen name="space_iconography">@dimen/space_s</dimen>
-    <dimen name="space_baseline">@dimen/space_standard</dimen>
+    <dimen name="size_small">4dp</dimen>
+    <dimen name="size_med_small">6dp</dimen>
+    <dimen name="size_medium">8dp</dimen>
+    <dimen name="size_med_large">12dp</dimen>
+    <dimen name="size_large">16dp</dimen>
+    <dimen name="size_xlarge">24dp</dimen>
+    <dimen name="size_xxlarge">48dp</dimen>
+
+    <dimen name="size_typography">@dimen/size_small</dimen>
+    <dimen name="size_iconography">@dimen/size_small</dimen>
+    <dimen name="size_baseline">@dimen/size_standard</dimen>
 
     <dimen name="margin_screen">24dp</dimen>
 </resources>
